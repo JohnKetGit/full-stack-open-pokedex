@@ -41,7 +41,7 @@ jobs:
         run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
   
   tag_release:
-    needs: [simple_deployment_pipeline]
+    needs: simple_deployment_pipeline
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
@@ -56,24 +56,23 @@ jobs:
 
   notify_success:
     name: Discord Webhook Notify - Success
-    if: ${{ needs.tag_release.result == 'success' }}
+    if: success()
     runs-on: ubuntu-20.04
-    needs: tag_release
     steps:
       - uses: rjstone/discord-webhook-notify@v1.0.4
         with:
-          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
           severity: info
-          details: Deployment succeeded!
+          details: New commit ${{ github.event.commits[0].url }} by ${{ github.event.commits[0].committer.username }}
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
 
   notify_failure:
     name: Discord Webhook Notify - Failure
-    if: ${{ needs.tag_release.result == 'failure' || needs.tag_release.result == 'cancelled' }}
+    if: failure()
     runs-on: ubuntu-20.04
-    needs: tag_release
+    needs: simple_deployment_pipeline
     steps:
       - uses: rjstone/discord-webhook-notify@v1.0.4
         with:
-          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
           severity: error
-          details: Deployment failed.
+          details: Deployment failed! The commit ${{ github.event.commits[0].url }} by ${{ github.event.commits[0].committer.username }} broke something!
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
