@@ -4,6 +4,8 @@ This repository is used for the CI/CD module of the Full stack open course
 
 Fork the repository to complete course exercises
 
+Solutions for the exercise 20-21 of part 11 can be found in [this repo](https://github.com/JohnKetGit/fullstackopen-part11-phonebookapp).
+
 ## Commands
 
 Start by running `npm install` inside the project folder
